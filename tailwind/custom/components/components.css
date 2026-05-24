@@ -958,6 +958,21 @@ ul.products>li {
 /* ─── Blog / News — Comments ─── */
 #comments {
 	@apply max-w-none mx-0;
+	/* Defensive: contain WordPress core form fields that ship with
+	   intrinsic widths via cols/size attributes and could otherwise
+	   blow past the article column on mobile. */
+	max-width: 100%;
+	overflow-wrap: break-word;
+}
+
+#comments * {
+	max-width: 100%;
+}
+
+/* Deeply nested comment replies should still respect the parent column
+   on mobile; ml-6 on .children already handles desktop. */
+#comments .children {
+	max-width: calc(100% - 0.75rem);
 }
 
 .comments-title {

@@ -16,11 +16,13 @@
 }
 
 /**
- * Tailwind utility ordering puts `inline-flex` AFTER `hidden` in the compiled
- * sheet, so an element with both classes (e.g. the show-more / show-less
- * button states on the product description tab) renders as inline-flex and
- * the “hidden” intent is ignored. Bump `.hidden` to always win.
+ * Tailwind v4 emits `inline-flex` AFTER `hidden` in the compiled sheet, so
+ * elements that use both classes for state toggling (e.g. the show-more /
+ * show-less spans on the product description tab) render as inline-flex
+ * even when `hidden` is applied. Scope the override to *only* those state
+ * spans so we don’t break legitimate `hidden lg:flex` responsive patterns
+ * used throughout the header / navigation.
  */
-.hidden {
+.show-more .hidden {
 	display: none !important;
 }
