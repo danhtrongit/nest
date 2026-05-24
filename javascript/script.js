@@ -66,6 +66,47 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	}
 
+	// ============================================================
+	// Footer accordions (mobile only).
+	// Each [data-footer-accordion] block has:
+	//   - a button.footer-section__toggle with aria-controls=<contentId>
+	//   - a div.footer-section__content keyed by that id
+	// Below md breakpoint (768px) the content is collapsed by default
+	// and toggled via the button. Above md, content is always visible
+	// (the JS no-ops because the button is pointer-events:none in CSS).
+	// ============================================================
+	const FOOTER_BREAKPOINT = 768;
+	const footerSections = document.querySelectorAll('[data-footer-accordion]');
+
+	footerSections.forEach((section) => {
+		const btn = section.querySelector('.footer-section__toggle');
+		const content = section.querySelector('.footer-section__content');
+		const chevron = section.querySelector('.footer-section__chevron');
+		if (!btn || !content) return;
+
+		btn.addEventListener('click', () => {
+			if (window.innerWidth >= FOOTER_BREAKPOINT) return;
+			const isOpen = btn.getAttribute('aria-expanded') === 'true';
+			btn.setAttribute('aria-expanded', String(!isOpen));
+			content.classList.toggle('max-md:hidden', isOpen);
+			if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+		});
+	});
+
+	// On resize past the breakpoint, restore desktop state so a previously
+	// opened-on-mobile section doesn't leave aria-expanded=true.
+	window.addEventListener('resize', () => {
+		if (window.innerWidth < FOOTER_BREAKPOINT) return;
+		footerSections.forEach((section) => {
+			const btn = section.querySelector('.footer-section__toggle');
+			const chevron = section.querySelector('.footer-section__chevron');
+			const content = section.querySelector('.footer-section__content');
+			if (btn) btn.setAttribute('aria-expanded', 'false');
+			if (chevron) chevron.style.transform = '';
+			if (content) content.classList.add('max-md:hidden');
+		});
+	});
+
 	// Back to top
 	const backToTop = document.getElementById('back-to-top');
 	if (backToTop) {

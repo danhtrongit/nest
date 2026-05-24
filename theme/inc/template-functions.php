@@ -204,3 +204,98 @@ function nest_html5_comment( $comment, $args, $depth ) {
 		</article><!-- .comment-body -->
 	<?php
 }
+
+/**
+ * Render a footer column header with the accordion-toggle button.
+ * Used inside both widget output and template-part fallbacks so behavior
+ * stays identical regardless of source.
+ *
+ * @param string $title       Visible heading text.
+ * @param string $content_id  Unique id assigned to the collapsible content.
+ */
+function nest_render_footer_accordion_header( $title, $content_id ) {
+	?>
+	<h4 class="footer-title font-heading text-[1.1rem] font-bold text-white uppercase tracking-wide leading-normal mb-3 max-md:mb-0">
+		<button type="button" class="footer-section__toggle relative w-full flex items-center justify-between gap-2 text-left md:pointer-events-none md:cursor-default max-md:py-3 max-md:border-b max-md:border-white/10" aria-expanded="false" aria-controls="<?php echo esc_attr( $content_id ); ?>">
+			<span class="relative block pl-6 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:w-2.5 before:h-2.5 before:border before:border-secondary before:rotate-45 after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:left-1.5 after:w-2.5 after:h-2.5 after:border after:border-secondary after:rotate-45"><?php echo esc_html( $title ); ?></span>
+			<svg class="footer-section__chevron md:hidden shrink-0 w-3 h-3 fill-white/80 transition-transform duration-200" viewBox="0 0 16 16"><path d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+		</button>
+	</h4>
+	<?php
+}
+
+/**
+ * Render a footer fallback link list section (used when the column sidebar has
+ * no widgets configured). If a nav menu location exists, render that; otherwise
+ * render a plain list of labels (URL=#) for placeholder display.
+ *
+ * @param string $title    Section title.
+ * @param string $menu_loc Optional theme_location to try first.
+ * @param array  $labels   Fallback labels when the menu location is empty.
+ */
+function nest_render_footer_fallback( $title, $menu_loc, $labels ) {
+	$uid = wp_unique_id( 'footer-acc-' );
+	?>
+	<div class="footer-section" data-footer-accordion>
+		<?php nest_render_footer_accordion_header( $title, $uid ); ?>
+		<div id="<?php echo esc_attr( $uid ); ?>" class="footer-section__content max-md:hidden md:!block">
+			<?php
+			if ( $menu_loc && has_nav_menu( $menu_loc ) ) {
+				wp_nav_menu(
+					array(
+						'theme_location' => $menu_loc,
+						'container'      => false,
+						'menu_class'     => 'footer-menu-list leading-[30px]',
+						'depth'          => 1,
+						'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
+					)
+				);
+			} else {
+				echo '<ul class="footer-menu-list leading-[30px]">';
+				foreach ( $labels as $label ) {
+					echo '<li><a href="#">' . esc_html( $label ) . '</a></li>';
+				}
+				echo '</ul>';
+			}
+			?>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Render a footer fallback image grid section (used for payment/cert columns).
+ *
+ * @param string $title Section title.
+ * @param array  $items List of [image, alt, url?] rows.
+ * @param string $size  'sm' (63x29) or 'lg' (height 45px).
+ */
+function nest_render_footer_images_fallback( $title, $items, $size = 'sm' ) {
+	$uid         = wp_unique_id( 'footer-acc-' );
+	$img_classes = 'lg' === $size ? 'h-[45px] w-auto' : 'w-[63px] h-[29px] rounded-[5px] object-contain';
+	?>
+	<div class="footer-section" data-footer-accordion>
+		<?php nest_render_footer_accordion_header( $title, $uid ); ?>
+		<div id="<?php echo esc_attr( $uid ); ?>" class="footer-section__content max-md:hidden md:!block">
+			<div class="flex flex-wrap gap-1.5 pt-2 md:pt-0">
+				<?php foreach ( $items as $item ) :
+					$img = isset( $item['image'] ) ? $item['image'] : '';
+					$alt = isset( $item['alt'] ) ? $item['alt'] : '';
+					$url = isset( $item['url'] ) ? $item['url'] : '';
+					if ( ! $img ) {
+						continue;
+					}
+					$tag = sprintf( '<img src="%s" alt="%s" class="%s" loading="lazy">', esc_url( $img ), esc_attr( $alt ), esc_attr( $img_classes ) );
+					if ( $url ) :
+						?>
+						<a href="<?php echo esc_url( $url ); ?>" class="inline-block"><?php echo $tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
+					<?php else :
+						echo $tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					endif;
+				endforeach; ?>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+

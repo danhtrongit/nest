@@ -18,3 +18,26 @@ h5,
 h6 {
 	@apply font-heading;
 }
+
+/**
+ * Tailwind Preflight resets `max-width: 100%` from the user agent, which lets
+ * fixed-width images blow past their container on narrow viewports.
+ * Restore the WordPress / browser-default behavior. `height: auto` preserves
+ * aspect ratio when the natural width is clamped down.
+ */
+img,
+video,
+iframe,
+embed,
+object {
+	max-width: 100%;
+	height: auto;
+}
+
+/**
+ * Prevent any single block from forcing horizontal scroll on the page itself.
+ * Only on <body> — `html { overflow-x: hidden }` breaks sticky positioning.
+ */
+body {
+	overflow-x: hidden;
+}

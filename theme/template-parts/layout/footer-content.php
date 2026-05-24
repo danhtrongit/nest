@@ -82,105 +82,74 @@
 
 				<!-- Column 2: Chính sách (20%) -->
 				<div class="w-full md:w-1/3 lg:w-[20%] px-2.5 mb-5 lg:mb-0">
-					<h4 class="footer-title font-heading text-[1.1rem] font-bold text-white uppercase tracking-wide leading-normal mb-3">
-						<span class="relative block pl-6 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:w-2.5 before:h-2.5 before:border before:border-secondary before:rotate-45 after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:left-1.5 after:w-2.5 after:h-2.5 after:border after:border-secondary after:rotate-45"><?php esc_html_e( 'Chính sách', 'nest' ); ?></span>
-					</h4>
 					<?php
-					if ( has_nav_menu( 'footer-policy' ) ) :
-						wp_nav_menu(
+					if ( is_active_sidebar( 'footer-col-2' ) ) :
+						dynamic_sidebar( 'footer-col-2' );
+					else :
+						nest_render_footer_fallback(
+							__( 'Chính sách', 'nest' ),
+							'footer-policy',
 							array(
-								'theme_location' => 'footer-policy',
-								'container'      => false,
-								'menu_class'     => 'footer-menu-list leading-[30px]',
-								'depth'          => 1,
-								'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
+								__( 'Chính sách mua hàng', 'nest' ),
+								__( 'Chính sách thanh toán', 'nest' ),
+								__( 'Chính sách vận chuyển', 'nest' ),
+								__( 'Cam kết cửa hàng', 'nest' ),
+								__( 'Chính sách bảo mật', 'nest' ),
 							)
 						);
-					else :
-						?>
-						<ul class="footer-menu-list leading-[30px]">
-							<li><a href="#"><?php esc_html_e( 'Chính sách mua hàng', 'nest' ); ?></a></li>
-							<li><a href="#"><?php esc_html_e( 'Chính sách thanh toán', 'nest' ); ?></a></li>
-							<li><a href="#"><?php esc_html_e( 'Chính sách vận chuyển', 'nest' ); ?></a></li>
-							<li><a href="#"><?php esc_html_e( 'Cam kết cửa hàng', 'nest' ); ?></a></li>
-							<li><a href="#"><?php esc_html_e( 'Chính sách bảo mật', 'nest' ); ?></a></li>
-						</ul>
-					<?php endif; ?>
+					endif;
+					?>
 				</div>
 
 				<!-- Column 3: Hướng dẫn (20%) -->
 				<div class="w-full md:w-1/3 lg:w-[20%] px-2.5 mb-5 lg:mb-0">
-					<h4 class="footer-title font-heading text-[1.1rem] font-bold text-white uppercase tracking-wide leading-normal mb-3">
-						<span class="relative block pl-6 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:w-2.5 before:h-2.5 before:border before:border-secondary before:rotate-45 after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:left-1.5 after:w-2.5 after:h-2.5 after:border after:border-secondary after:rotate-45"><?php esc_html_e( 'Hướng dẫn', 'nest' ); ?></span>
-					</h4>
 					<?php
-					if ( has_nav_menu( 'footer-guide' ) ) :
-						wp_nav_menu(
+					if ( is_active_sidebar( 'footer-col-3' ) ) :
+						dynamic_sidebar( 'footer-col-3' );
+					else :
+						nest_render_footer_fallback(
+							__( 'Hướng dẫn', 'nest' ),
+							'footer-guide',
 							array(
-								'theme_location' => 'footer-guide',
-								'container'      => false,
-								'menu_class'     => 'footer-menu-list leading-[30px]',
-								'depth'          => 1,
-								'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
+								__( 'Hướng dẫn mua hàng', 'nest' ),
+								__( 'Hướng dẫn đổi trả', 'nest' ),
+								__( 'Hướng dẫn thanh toán', 'nest' ),
+								__( 'Quy định bảo hành', 'nest' ),
+								__( 'Hướng dẫn chuyển khoản', 'nest' ),
 							)
 						);
-					else :
-						?>
-						<ul class="footer-menu-list leading-[30px]">
-							<li><a href="#"><?php esc_html_e( 'Hướng dẫn mua hàng', 'nest' ); ?></a></li>
-							<li><a href="#"><?php esc_html_e( 'Hướng dẫn đổi trả', 'nest' ); ?></a></li>
-							<li><a href="#"><?php esc_html_e( 'Hướng dẫn thanh toán', 'nest' ); ?></a></li>
-							<li><a href="#"><?php esc_html_e( 'Quy định bảo hành', 'nest' ); ?></a></li>
-							<li><a href="#"><?php esc_html_e( 'Hướng dẫn chuyển khoản', 'nest' ); ?></a></li>
-						</ul>
-					<?php endif; ?>
+					endif;
+					?>
 				</div>
 
 				<!-- Column 4: Payment + Certification (30%) -->
-				<div class="w-full md:w-1/3 lg:w-[30%] px-2.5">
-
-					<!-- Payment Methods -->
-					<div>
-						<h4 class="footer-title font-heading text-[1.1rem] font-bold text-white uppercase tracking-wide leading-normal mb-3">
-							<span class="relative block pl-6 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:w-2.5 before:h-2.5 before:border before:border-secondary before:rotate-45 after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:left-1.5 after:w-2.5 after:h-2.5 after:border after:border-secondary after:rotate-45"><?php esc_html_e( 'Hỗ trợ thanh toán', 'nest' ); ?></span>
-						</h4>
-						<div class="mt-5 max-w-[220px]">
-							<?php if ( is_active_sidebar( 'footer-payment' ) ) : ?>
-								<?php dynamic_sidebar( 'footer-payment' ); ?>
-							<?php else : ?>
-								<div class="flex flex-wrap gap-1.5">
-									<?php
-									$payments = array(
-										'payment_1' => 'MoMo',
-										'payment_2' => 'ZaloPay',
-										'payment_3' => 'VNPay',
-										'payment_4' => 'Moca',
-										'payment_5' => 'Visa',
-										'payment_6' => 'ATM',
-									);
-									foreach ( $payments as $file => $label ) :
-										?>
-										<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/' . $file . '.png' ); ?>" alt="<?php echo esc_attr( $label ); ?>" class="w-[63px] h-[29px] rounded-[5px] object-contain" width="63" height="29">
-									<?php endforeach; ?>
-								</div>
-							<?php endif; ?>
-						</div>
-					</div>
-
-					<!-- Certification -->
-					<div class="mt-5">
-						<h4 class="footer-title font-heading text-[1.1rem] font-bold text-white uppercase tracking-wide leading-normal mb-3">
-							<span class="relative block pl-6 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:w-2.5 before:h-2.5 before:border before:border-secondary before:rotate-45 after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:left-1.5 after:w-2.5 after:h-2.5 after:border after:border-secondary after:rotate-45"><?php esc_html_e( 'Chứng nhận', 'nest' ); ?></span>
-						</h4>
-						<div class="mt-4 flex items-center gap-1.5">
-							<?php if ( is_active_sidebar( 'footer-certification' ) ) : ?>
-								<?php dynamic_sidebar( 'footer-certification' ); ?>
-							<?php else : ?>
-								<a href="#" class="inline-block"><img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/certifi_1.png' ); ?>" alt="<?php esc_attr_e( 'Chứng nhận', 'nest' ); ?>" class="h-[45px] w-auto" height="45"></a>
-								<a href="#" class="inline-block"><img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/certifi_2.png' ); ?>" alt="<?php esc_attr_e( 'Chứng nhận', 'nest' ); ?>" class="h-[45px] w-auto" height="45"></a>
-							<?php endif; ?>
-						</div>
-					</div>
+				<div class="w-full md:w-1/3 lg:w-[30%] px-2.5 lg:space-y-5">
+					<?php
+					if ( is_active_sidebar( 'footer-col-4' ) ) :
+						dynamic_sidebar( 'footer-col-4' );
+					else :
+						nest_render_footer_images_fallback(
+							__( 'Hỗ trợ thanh toán', 'nest' ),
+							array(
+								array( 'image' => get_template_directory_uri() . '/assets/images/payment_1.png', 'alt' => 'MoMo' ),
+								array( 'image' => get_template_directory_uri() . '/assets/images/payment_2.png', 'alt' => 'ZaloPay' ),
+								array( 'image' => get_template_directory_uri() . '/assets/images/payment_3.png', 'alt' => 'VNPay' ),
+								array( 'image' => get_template_directory_uri() . '/assets/images/payment_4.png', 'alt' => 'Moca' ),
+								array( 'image' => get_template_directory_uri() . '/assets/images/payment_5.png', 'alt' => 'Visa' ),
+								array( 'image' => get_template_directory_uri() . '/assets/images/payment_6.png', 'alt' => 'ATM' ),
+							),
+							'sm'
+						);
+						nest_render_footer_images_fallback(
+							__( 'Chứng nhận', 'nest' ),
+							array(
+								array( 'image' => get_template_directory_uri() . '/assets/images/certifi_1.png', 'alt' => __( 'Chứng nhận', 'nest' ) ),
+								array( 'image' => get_template_directory_uri() . '/assets/images/certifi_2.png', 'alt' => __( 'Chứng nhận', 'nest' ) ),
+							),
+							'lg'
+						);
+					endif;
+					?>
 				</div>
 
 			</div>

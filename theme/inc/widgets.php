@@ -42,6 +42,21 @@ function nest_homepage_sidebars_init() {
 		'before_title'  => '<span class="sr-only">',
 		'after_title'   => '</span>',
 	) );
+
+	// Footer menu columns (2, 3, 4). Column 1 is the brand block (logo+contact)
+	// and stays hardcoded in template-parts/layout/footer-content.php.
+	for ( $i = 2; $i <= 4; $i ++ ) {
+		register_sidebar( array(
+			/* translators: %d: column number */
+			'name'          => sprintf( __( 'Footer – Column %d', 'nest' ), $i ),
+			'id'            => 'footer-col-' . $i,
+			'description'   => __( 'Widgets hiển thị ở cột footer này. Trên mobile mỗi widget hiển thị dạng accordion (mặc định đóng).', 'nest' ),
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '',
+			'after_title'   => '',
+		) );
+	}
 }
 
 /* =======================================================================
@@ -60,6 +75,8 @@ function nest_register_homepage_widgets() {
 	register_widget( 'Nest_Widget_Why_Choose' );
 	register_widget( 'Nest_Widget_News' );
 	register_widget( 'Nest_Widget_Partners' );
+	register_widget( 'Nest_Widget_Footer_Menu' );
+	register_widget( 'Nest_Widget_Footer_Images' );
 }
 
 /* =======================================================================
@@ -1363,7 +1380,269 @@ class Nest_Widget_Partners extends WP_Widget {
 }
 
 /* =======================================================================
- * 10. Seed default widgets on theme activation.
+ * 10. Footer Menu Widget (link list with mobile accordion)
+ * ===================================================================== */
+
+class Nest_Widget_Footer_Menu extends WP_Widget {
+
+	public function __construct() {
+		parent::__construct(
+			'nest_footer_menu',
+			__( '[Footer] Menu links', 'nest' ),
+			array( 'description' => __( 'Danh sách link cho cột footer. Trên mobile sẽ hiển thị dạng accordion (mặc định đóng).', 'nest' ) )
+		);
+	}
+
+	public function widget( $args, $instance ) {
+		$title    = isset( $instance['title'] ) ? $instance['title'] : '';
+		$menu_loc = isset( $instance['menu_location'] ) ? $instance['menu_location'] : '';
+		$links    = isset( $instance['links'] ) && is_array( $instance['links'] ) ? $instance['links'] : array();
+
+		// Filter out empty link rows.
+		$links = array_values( array_filter( $links, function ( $l ) {
+			return ! empty( $l['label'] );
+		} ) );
+
+		// Render: must contain at least a title.
+		if ( ! $title ) {
+			return;
+		}
+
+		$has_menu  = $menu_loc && has_nav_menu( $menu_loc );
+		$has_links = ! empty( $links );
+
+		if ( ! $has_menu && ! $has_links ) {
+			return;
+		}
+
+		$uid = wp_unique_id( 'footer-acc-' );
+		?>
+		<div class="footer-section" data-footer-accordion>
+			<?php nest_render_footer_accordion_header( $title, $uid ); ?>
+			<div id="<?php echo esc_attr( $uid ); ?>" class="footer-section__content max-md:hidden md:!block">
+				<?php if ( $has_menu ) :
+					wp_nav_menu(
+						array(
+							'theme_location' => $menu_loc,
+							'container'      => false,
+							'menu_class'     => 'footer-menu-list leading-[30px]',
+							'depth'          => 1,
+							'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
+						)
+					);
+				else : ?>
+					<ul class="footer-menu-list leading-[30px]">
+						<?php foreach ( $links as $link ) :
+							$label = $link['label'];
+							$url   = isset( $link['url'] ) && $link['url'] ? $link['url'] : '#';
+							?>
+							<li><a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $label ); ?></a></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	public function form( $instance ) {
+		$title    = isset( $instance['title'] ) ? $instance['title'] : '';
+		$menu_loc = isset( $instance['menu_location'] ) ? $instance['menu_location'] : '';
+		$links    = isset( $instance['links'] ) && is_array( $instance['links'] ) ? $instance['links'] : array();
+		$count    = max( count( $links ), 5 );
+
+		$locations = get_registered_nav_menus();
+		?>
+		<p>
+			<label><?php esc_html_e( 'Title:', 'nest' ); ?></label>
+			<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $title ); ?>">
+		</p>
+		<p>
+			<label><?php esc_html_e( 'Sử dụng menu (ưu tiên nếu chọn):', 'nest' ); ?></label>
+			<select class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'menu_location' ) ); ?>">
+				<option value=""><?php esc_html_e( '-- Dùng link tùy chỉnh dưới đây --', 'nest' ); ?></option>
+				<?php foreach ( $locations as $loc => $label ) : ?>
+					<option value="<?php echo esc_attr( $loc ); ?>" <?php selected( $menu_loc, $loc ); ?>><?php echo esc_html( $label ); ?> (<?php echo esc_html( $loc ); ?>)</option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<hr>
+		<p><strong><?php esc_html_e( 'Hoặc nhập link tùy chỉnh:', 'nest' ); ?></strong></p>
+		<?php for ( $i = 0; $i < $count; $i ++ ) : $link = isset( $links[ $i ] ) ? $links[ $i ] : array(); ?>
+			<div style="border:1px solid #ddd;padding:6px;margin-bottom:6px;">
+				<p style="margin:4px 0"><label><?php printf( esc_html__( 'Label %d:', 'nest' ), $i + 1 ); ?></label>
+				<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'links' ) ); ?>[<?php echo $i; ?>][label]" value="<?php echo esc_attr( $link['label'] ?? '' ); ?>"></p>
+				<p style="margin:4px 0"><label><?php esc_html_e( 'URL:', 'nest' ); ?></label>
+				<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'links' ) ); ?>[<?php echo $i; ?>][url]" value="<?php echo esc_attr( $link['url'] ?? '#' ); ?>"></p>
+			</div>
+		<?php endfor; ?>
+		<p>
+			<label><?php esc_html_e( 'Số ô link mong muốn:', 'nest' ); ?></label>
+			<input type="number" name="<?php echo esc_attr( $this->get_field_name( 'link_count' ) ); ?>" value="<?php echo esc_attr( $count ); ?>" min="1" max="20" style="width:60px">
+		</p>
+		<?php
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		$instance = array(
+			'title'         => sanitize_text_field( $new_instance['title'] ?? '' ),
+			'menu_location' => sanitize_key( $new_instance['menu_location'] ?? '' ),
+		);
+
+		$links = array();
+		if ( isset( $new_instance['links'] ) && is_array( $new_instance['links'] ) ) {
+			foreach ( $new_instance['links'] as $link ) {
+				$label = isset( $link['label'] ) ? sanitize_text_field( $link['label'] ) : '';
+				if ( ! $label ) {
+					continue;
+				}
+				$links[] = array(
+					'label' => $label,
+					'url'   => isset( $link['url'] ) ? esc_url_raw( trim( $link['url'] ) ) : '#',
+				);
+			}
+		}
+
+		$count = isset( $new_instance['link_count'] ) ? absint( $new_instance['link_count'] ) : count( $links );
+		$count = max( $count, 1 );
+		while ( count( $links ) < $count ) {
+			$links[] = array( 'label' => '', 'url' => '#' );
+		}
+
+		$instance['links'] = $links;
+		return $instance;
+	}
+}
+
+/* =======================================================================
+ * 11. Footer Images Widget (logos / payment / certification grid)
+ * ===================================================================== */
+
+class Nest_Widget_Footer_Images extends WP_Widget {
+
+	public function __construct() {
+		parent::__construct(
+			'nest_footer_images',
+			__( '[Footer] Image grid', 'nest' ),
+			array( 'description' => __( 'Lưới logo/hình (hỗ trợ thanh toán, chứng nhận…). Mobile hiển thị dạng accordion.', 'nest' ) )
+		);
+	}
+
+	public function widget( $args, $instance ) {
+		$title = isset( $instance['title'] ) ? $instance['title'] : '';
+		$items = isset( $instance['items'] ) && is_array( $instance['items'] ) ? $instance['items'] : array();
+		$size  = isset( $instance['size'] ) ? $instance['size'] : 'sm';
+
+		$items = array_values( array_filter( $items, function ( $i ) {
+			return ! empty( $i['image'] );
+		} ) );
+
+		if ( ! $title || empty( $items ) ) {
+			return;
+		}
+
+		$img_classes = 'lg' === $size
+			? 'h-[45px] w-auto'
+			: 'w-[63px] h-[29px] rounded-[5px] object-contain';
+
+		$uid = wp_unique_id( 'footer-acc-' );
+		?>
+		<div class="footer-section" data-footer-accordion>
+			<?php nest_render_footer_accordion_header( $title, $uid ); ?>
+			<div id="<?php echo esc_attr( $uid ); ?>" class="footer-section__content max-md:hidden md:!block">
+				<div class="flex flex-wrap gap-1.5 pt-2 md:pt-0">
+					<?php foreach ( $items as $item ) :
+						$img = $item['image'];
+						$alt = $item['title'] ?? '';
+						$url = isset( $item['url'] ) && $item['url'] ? $item['url'] : '';
+						$img_tag = sprintf(
+							'<img src="%s" alt="%s" class="%s" loading="lazy">',
+							esc_url( $img ),
+							esc_attr( $alt ),
+							esc_attr( $img_classes )
+						);
+						if ( $url ) :
+							?>
+							<a href="<?php echo esc_url( $url ); ?>" class="inline-block"><?php echo $img_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
+						<?php else :
+							echo $img_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						endif;
+					endforeach; ?>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	public function form( $instance ) {
+		$title = isset( $instance['title'] ) ? $instance['title'] : '';
+		$items = isset( $instance['items'] ) && is_array( $instance['items'] ) ? $instance['items'] : array();
+		$size  = isset( $instance['size'] ) ? $instance['size'] : 'sm';
+		$count = max( count( $items ), 6 );
+		?>
+		<p>
+			<label><?php esc_html_e( 'Title:', 'nest' ); ?></label>
+			<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $title ); ?>">
+		</p>
+		<p>
+			<label><?php esc_html_e( 'Kích thước:', 'nest' ); ?></label>
+			<select class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'size' ) ); ?>">
+				<option value="sm" <?php selected( $size, 'sm' ); ?>><?php esc_html_e( 'Nhỏ (63x29) – cho thanh toán', 'nest' ); ?></option>
+				<option value="lg" <?php selected( $size, 'lg' ); ?>><?php esc_html_e( 'Lớn (cao 45px) – cho chứng nhận', 'nest' ); ?></option>
+			</select>
+		</p>
+		<hr>
+		<?php for ( $i = 0; $i < $count; $i ++ ) : $item = isset( $items[ $i ] ) ? $items[ $i ] : array(); ?>
+			<div style="border:1px solid #ddd;padding:6px;margin-bottom:6px;">
+				<p style="margin:4px 0"><label><?php printf( esc_html__( 'Hình %d - Image URL:', 'nest' ), $i + 1 ); ?></label>
+				<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'items' ) ); ?>[<?php echo $i; ?>][image]" value="<?php echo esc_attr( $item['image'] ?? '' ); ?>"></p>
+				<p style="margin:4px 0"><label><?php esc_html_e( 'Tên/Alt:', 'nest' ); ?></label>
+				<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'items' ) ); ?>[<?php echo $i; ?>][title]" value="<?php echo esc_attr( $item['title'] ?? '' ); ?>"></p>
+				<p style="margin:4px 0"><label><?php esc_html_e( 'Link (tùy chọn):', 'nest' ); ?></label>
+				<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'items' ) ); ?>[<?php echo $i; ?>][url]" value="<?php echo esc_attr( $item['url'] ?? '' ); ?>"></p>
+			</div>
+		<?php endfor; ?>
+		<p>
+			<label><?php esc_html_e( 'Số ô mong muốn:', 'nest' ); ?></label>
+			<input type="number" name="<?php echo esc_attr( $this->get_field_name( 'item_count' ) ); ?>" value="<?php echo esc_attr( $count ); ?>" min="1" max="20" style="width:60px">
+		</p>
+		<?php
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		$instance = array(
+			'title' => sanitize_text_field( $new_instance['title'] ?? '' ),
+			'size'  => in_array( $new_instance['size'] ?? 'sm', array( 'sm', 'lg' ), true ) ? $new_instance['size'] : 'sm',
+		);
+
+		$items = array();
+		if ( isset( $new_instance['items'] ) && is_array( $new_instance['items'] ) ) {
+			foreach ( $new_instance['items'] as $item ) {
+				$image = isset( $item['image'] ) ? esc_url_raw( trim( $item['image'] ) ) : '';
+				if ( ! $image ) {
+					continue;
+				}
+				$items[] = array(
+					'image' => $image,
+					'title' => isset( $item['title'] ) ? sanitize_text_field( $item['title'] ) : '',
+					'url'   => isset( $item['url'] ) ? esc_url_raw( trim( $item['url'] ) ) : '',
+				);
+			}
+		}
+
+		$count = isset( $new_instance['item_count'] ) ? absint( $new_instance['item_count'] ) : count( $items );
+		$count = max( $count, 1 );
+		while ( count( $items ) < $count ) {
+			$items[] = array( 'image' => '', 'title' => '', 'url' => '' );
+		}
+
+		$instance['items'] = $items;
+		return $instance;
+	}
+}
+
+/* =======================================================================
+ * 12. Seed default widgets on theme activation.
  * ===================================================================== */
 
 add_action( 'after_switch_theme', 'nest_seed_default_homepage_widgets' );
@@ -1371,40 +1650,112 @@ add_action( 'after_switch_theme', 'nest_seed_default_homepage_widgets' );
 function nest_seed_default_homepage_widgets() {
 	$sidebars = get_option( 'sidebars_widgets', array() );
 
-	// Only seed if homepage-sections has no widgets yet.
-	if ( ! empty( $sidebars['homepage-sections'] ) ) {
-		return;
+	// --- Homepage sections ---
+	if ( empty( $sidebars['homepage-sections'] ) ) {
+		$widgets_to_seed = array(
+			'nest_hero_slider'       => array(),
+			'nest_services'          => array(),
+			'nest_banner_collection' => array(),
+			'nest_about'             => array(),
+			'nest_product_tabs'      => array(),
+			'nest_coupon_slider'     => array(),
+			'nest_why_choose'        => array(),
+			'nest_news'              => array(),
+			'nest_partners'          => array(),
+		);
+
+		$homepage_widgets = array();
+		foreach ( $widgets_to_seed as $widget_id_base => $default_instance ) {
+			$homepage_widgets[] = nest_register_widget_instance( $widget_id_base, $default_instance );
+		}
+		$sidebars['homepage-sections'] = $homepage_widgets;
 	}
 
-	$widgets_to_seed = array(
-		'nest_hero_slider'       => array(),
-		'nest_services'          => array(),
-		'nest_banner_collection' => array(),
-		'nest_about'             => array(),
-		'nest_product_tabs'      => array(),
-		'nest_coupon_slider'     => array(),
-		'nest_why_choose'        => array(),
-		'nest_news'              => array(),
-		'nest_partners'          => array(),
+	// --- Footer columns ---
+	$footer_uri = get_template_directory_uri() . '/assets/images/';
+
+	$footer_seeds = array(
+		'footer-col-2' => array(
+			'nest_footer_menu' => array(
+				'title'         => __( 'Chính sách', 'nest' ),
+				'menu_location' => has_nav_menu( 'footer-policy' ) ? 'footer-policy' : '',
+				'links'         => array(
+					array( 'label' => __( 'Chính sách mua hàng', 'nest' ), 'url' => '#' ),
+					array( 'label' => __( 'Chính sách thanh toán', 'nest' ), 'url' => '#' ),
+					array( 'label' => __( 'Chính sách vận chuyển', 'nest' ), 'url' => '#' ),
+					array( 'label' => __( 'Cam kết cửa hàng', 'nest' ), 'url' => '#' ),
+					array( 'label' => __( 'Chính sách bảo mật', 'nest' ), 'url' => '#' ),
+				),
+			),
+		),
+		'footer-col-3' => array(
+			'nest_footer_menu' => array(
+				'title'         => __( 'Hướng dẫn', 'nest' ),
+				'menu_location' => has_nav_menu( 'footer-guide' ) ? 'footer-guide' : '',
+				'links'         => array(
+					array( 'label' => __( 'Hướng dẫn mua hàng', 'nest' ), 'url' => '#' ),
+					array( 'label' => __( 'Hướng dẫn đổi trả', 'nest' ), 'url' => '#' ),
+					array( 'label' => __( 'Hướng dẫn thanh toán', 'nest' ), 'url' => '#' ),
+					array( 'label' => __( 'Quy định bảo hành', 'nest' ), 'url' => '#' ),
+					array( 'label' => __( 'Hướng dẫn chuyển khoản', 'nest' ), 'url' => '#' ),
+				),
+			),
+		),
+		'footer-col-4' => array(
+			'nest_footer_images_payment' => array(
+				'_widget_id_base' => 'nest_footer_images',
+				'title' => __( 'Hỗ trợ thanh toán', 'nest' ),
+				'size'  => 'sm',
+				'items' => array(
+					array( 'image' => $footer_uri . 'payment_1.png', 'title' => 'MoMo', 'url' => '' ),
+					array( 'image' => $footer_uri . 'payment_2.png', 'title' => 'ZaloPay', 'url' => '' ),
+					array( 'image' => $footer_uri . 'payment_3.png', 'title' => 'VNPay', 'url' => '' ),
+					array( 'image' => $footer_uri . 'payment_4.png', 'title' => 'Moca', 'url' => '' ),
+					array( 'image' => $footer_uri . 'payment_5.png', 'title' => 'Visa', 'url' => '' ),
+					array( 'image' => $footer_uri . 'payment_6.png', 'title' => 'ATM', 'url' => '' ),
+				),
+			),
+			'nest_footer_images_cert' => array(
+				'_widget_id_base' => 'nest_footer_images',
+				'title' => __( 'Chứng nhận', 'nest' ),
+				'size'  => 'lg',
+				'items' => array(
+					array( 'image' => $footer_uri . 'certifi_1.png', 'title' => __( 'Chứng nhận', 'nest' ), 'url' => '' ),
+					array( 'image' => $footer_uri . 'certifi_2.png', 'title' => __( 'Chứng nhận', 'nest' ), 'url' => '' ),
+				),
+			),
+		),
 	);
 
-	$homepage_widgets = array();
-
-	foreach ( $widgets_to_seed as $widget_id_base => $default_instance ) {
-		$option_key = 'widget_' . $widget_id_base;
-		$option     = get_option( $option_key, array() );
-
-		// Find next available number.
-		$numbers = array_filter( array_keys( $option ), 'is_int' );
-		$next    = empty( $numbers ) ? 2 : max( $numbers ) + 1;
-
-		$option[ $next ]        = $default_instance;
-		$option['_multiwidget'] = 1;
-		update_option( $option_key, $option );
-
-		$homepage_widgets[] = $widget_id_base . '-' . $next;
+	foreach ( $footer_seeds as $sidebar_id => $widgets ) {
+		if ( ! empty( $sidebars[ $sidebar_id ] ) ) {
+			continue;
+		}
+		$ids = array();
+		foreach ( $widgets as $key => $instance ) {
+			$widget_id_base = isset( $instance['_widget_id_base'] ) ? $instance['_widget_id_base'] : $key;
+			unset( $instance['_widget_id_base'] );
+			$ids[] = nest_register_widget_instance( $widget_id_base, $instance );
+		}
+		$sidebars[ $sidebar_id ] = $ids;
 	}
 
-	$sidebars['homepage-sections'] = $homepage_widgets;
 	update_option( 'sidebars_widgets', $sidebars );
+}
+
+/**
+ * Persist a single widget instance under widget_{base}, returning its id (base-N).
+ */
+function nest_register_widget_instance( $widget_id_base, $instance ) {
+	$option_key = 'widget_' . $widget_id_base;
+	$option     = get_option( $option_key, array() );
+
+	$numbers = array_filter( array_keys( $option ), 'is_int' );
+	$next    = empty( $numbers ) ? 2 : max( $numbers ) + 1;
+
+	$option[ $next ]        = $instance;
+	$option['_multiwidget'] = 1;
+	update_option( $option_key, $option );
+
+	return $widget_id_base . '-' . $next;
 }
