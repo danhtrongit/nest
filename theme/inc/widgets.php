@@ -58,6 +58,8 @@ function nest_register_homepage_widgets() {
 	register_widget( 'Nest_Widget_Product_Tabs' );
 	register_widget( 'Nest_Widget_Coupon_Slider' );
 	register_widget( 'Nest_Widget_Why_Choose' );
+	register_widget( 'Nest_Widget_News' );
+	register_widget( 'Nest_Widget_Partners' );
 }
 
 /* =======================================================================
@@ -1042,7 +1044,326 @@ class Nest_Widget_Why_Choose extends WP_Widget {
 }
 
 /* =======================================================================
- * 8. Seed default widgets on theme activation.
+ * 8. News Widget (Tin tức)
+ * ===================================================================== */
+
+class Nest_Widget_News extends WP_Widget {
+
+	public function __construct() {
+		parent::__construct(
+			'nest_news',
+			__( '[Home] News', 'nest' ),
+			array( 'description' => __( 'Section Tin tức – 1 bài nổi bật + danh sách bài viết.', 'nest' ) )
+		);
+	}
+
+	public function widget( $args, $instance ) {
+		$eyebrow  = isset( $instance['eyebrow'] ) && $instance['eyebrow'] ? $instance['eyebrow'] : get_bloginfo( 'name' );
+		$title    = isset( $instance['title'] ) && $instance['title'] ? $instance['title'] : __( 'Tin tức - Tư vấn từ Nest', 'nest' );
+		$cat_id   = isset( $instance['cat_id'] ) ? absint( $instance['cat_id'] ) : 0;
+		$count    = isset( $instance['count'] ) ? absint( $instance['count'] ) : 7;
+		$btn_text = isset( $instance['btn_text'] ) && $instance['btn_text'] ? $instance['btn_text'] : __( 'Xem thêm', 'nest' );
+		$btn_url  = isset( $instance['btn_url'] ) && $instance['btn_url'] ? $instance['btn_url'] : '';
+
+		if ( ! $btn_url ) {
+			$btn_url = $cat_id ? get_category_link( $cat_id ) : get_permalink( get_option( 'page_for_posts' ) );
+			if ( ! $btn_url ) {
+				$btn_url = home_url( '/' );
+			}
+		}
+
+		$query_args = array(
+			'post_type'      => 'post',
+			'posts_per_page' => max( 1, $count ),
+			'post_status'    => 'publish',
+			'ignore_sticky_posts' => true,
+		);
+		if ( $cat_id ) {
+			$query_args['cat'] = $cat_id;
+		}
+
+		$posts_query = new WP_Query( $query_args );
+
+		if ( ! $posts_query->have_posts() ) {
+			return;
+		}
+
+		$posts = $posts_query->posts;
+		$featured = array_shift( $posts );
+		$rest     = $posts;
+		?>
+		<section class="section-index section-news py-[30px] max-md:py-[25px]">
+			<div class="container mx-auto px-4">
+				<div class="section-title text-center relative mb-6">
+					<span class="block w-full font-medium uppercase text-primary text-sm max-md:text-xs"><?php echo esc_html( $eyebrow ); ?></span>
+					<h2 class="inline-block font-heading font-extrabold text-[2.6rem] max-md:text-[2rem] uppercase mb-0">
+						<a href="<?php echo esc_url( $btn_url ); ?>" title="<?php echo esc_attr( $title ); ?>"><?php echo esc_html( $title ); ?></a>
+					</h2>
+					<div class="section-separator flex justify-center relative mt-2.5">
+						<div class="relative w-8 h-3 before:content-[''] before:absolute before:top-0 before:left-2 before:w-2.5 before:h-2.5 before:border before:border-primary before:rotate-45 after:content-[''] after:absolute after:top-0 after:right-2 after:w-2.5 after:h-2.5 after:border after:border-primary after:rotate-45"></div>
+					</div>
+				</div>
+
+				<div class="flex flex-wrap -mx-2.5">
+					<!-- Featured (big) post -->
+					<?php if ( $featured ) :
+						$f_id    = $featured->ID;
+						$f_title = get_the_title( $f_id );
+						$f_link  = get_permalink( $f_id );
+						$f_thumb = get_the_post_thumbnail_url( $f_id, 'large' );
+						$f_date  = get_the_date( 'd/m/Y', $f_id );
+						$f_excerpt = wp_strip_all_tags( $featured->post_excerpt ? $featured->post_excerpt : wp_trim_words( $featured->post_content, 40 ) );
+						?>
+						<div class="w-full lg:w-1/3 px-2.5 mb-5 lg:mb-0">
+							<a href="<?php echo esc_url( $f_link ); ?>" title="<?php echo esc_attr( $f_title ); ?>" class="news-item news-item--featured group block h-full bg-white border border-primary/10 overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+								<div class="relative overflow-hidden aspect-[4/3]">
+									<?php if ( $f_thumb ) : ?>
+										<img src="<?php echo esc_url( $f_thumb ); ?>" alt="<?php echo esc_attr( $f_title ); ?>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+									<?php else : ?>
+										<div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm"><?php esc_html_e( 'No image', 'nest' ); ?></div>
+									<?php endif; ?>
+								</div>
+								<div class="p-4">
+									<h3 class="font-bold text-base lg:text-lg leading-snug mb-2 line-clamp-2 group-hover:text-hover transition-colors"><?php echo esc_html( $f_title ); ?></h3>
+									<?php if ( $f_excerpt ) : ?>
+										<p class="text-sm text-gray-600 leading-relaxed mb-3 line-clamp-3"><?php echo esc_html( $f_excerpt ); ?></p>
+									<?php endif; ?>
+									<p class="flex items-center gap-1.5 text-xs text-gray-500 mb-0">
+										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"></path><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"></path></svg>
+										<span><?php echo esc_html( $f_date ); ?></span>
+									</p>
+								</div>
+							</a>
+						</div>
+					<?php endif; ?>
+
+					<!-- Rest of posts grid -->
+					<?php if ( ! empty( $rest ) ) : ?>
+						<div class="w-full lg:w-2/3 px-2.5">
+							<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+								<?php foreach ( $rest as $post_obj ) :
+									$p_id    = $post_obj->ID;
+									$p_title = get_the_title( $p_id );
+									$p_link  = get_permalink( $p_id );
+									$p_thumb = get_the_post_thumbnail_url( $p_id, 'medium' );
+									$p_date  = get_the_date( 'd/m/Y', $p_id );
+									?>
+									<a href="<?php echo esc_url( $p_link ); ?>" title="<?php echo esc_attr( $p_title ); ?>" class="news-item group block bg-white border border-primary/10 overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+										<div class="relative overflow-hidden aspect-[4/3]">
+											<?php if ( $p_thumb ) : ?>
+												<img src="<?php echo esc_url( $p_thumb ); ?>" alt="<?php echo esc_attr( $p_title ); ?>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+											<?php else : ?>
+												<div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs"><?php esc_html_e( 'No image', 'nest' ); ?></div>
+											<?php endif; ?>
+										</div>
+										<div class="p-3">
+											<h3 class="font-semibold text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-hover transition-colors"><?php echo esc_html( $p_title ); ?></h3>
+											<p class="flex items-center gap-1 text-[11px] text-gray-500 mb-0">
+												<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"></path><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"></path></svg>
+												<span><?php echo esc_html( $p_date ); ?></span>
+											</p>
+										</div>
+									</a>
+								<?php endforeach; ?>
+							</div>
+						</div>
+					<?php endif; ?>
+				</div>
+
+				<div class="flex justify-center mt-7">
+					<a href="<?php echo esc_url( $btn_url ); ?>" class="nest-btn" title="<?php echo esc_attr( $btn_text ); ?>">
+						<svg width="14" height="32" viewBox="0 0 14 32" fill="none" class="nest-btn__deco"><path d="M13.3726 0H0.372559V13.2018L3.16222 16L6.37256 19L9.5 16L7.93628 14.5L6.37256 13L0.372559 18.6069V32H13.3726" stroke="currentColor"></path></svg>
+						<span class="nest-btn__text"><?php echo esc_html( $btn_text ); ?></span>
+						<svg width="14" height="32" viewBox="0 0 14 32" fill="none" class="nest-btn__deco -scale-x-100"><path d="M13.3726 0H0.372559V13.2018L3.16222 16L6.37256 19L9.5 16L7.93628 14.5L6.37256 13L0.372559 18.6069V32H13.3726" stroke="currentColor"></path></svg>
+					</a>
+				</div>
+			</div>
+		</section>
+		<?php
+		wp_reset_postdata();
+	}
+
+	public function form( $instance ) {
+		$eyebrow  = isset( $instance['eyebrow'] ) ? $instance['eyebrow'] : '';
+		$title    = isset( $instance['title'] ) ? $instance['title'] : '';
+		$cat_id   = isset( $instance['cat_id'] ) ? absint( $instance['cat_id'] ) : 0;
+		$count    = isset( $instance['count'] ) ? absint( $instance['count'] ) : 7;
+		$btn_text = isset( $instance['btn_text'] ) ? $instance['btn_text'] : '';
+		$btn_url  = isset( $instance['btn_url'] ) ? $instance['btn_url'] : '';
+
+		$categories = get_categories( array( 'hide_empty' => false ) );
+		?>
+		<p><label><?php esc_html_e( 'Eyebrow:', 'nest' ); ?></label>
+		<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'eyebrow' ) ); ?>" value="<?php echo esc_attr( $eyebrow ); ?>"></p>
+		<p><label><?php esc_html_e( 'Title:', 'nest' ); ?></label>
+		<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $title ); ?>"></p>
+		<p>
+			<label><?php esc_html_e( 'Danh mục bài viết:', 'nest' ); ?></label>
+			<select class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'cat_id' ) ); ?>">
+				<option value="0"><?php esc_html_e( '-- Tất cả --', 'nest' ); ?></option>
+				<?php foreach ( $categories as $cat ) : ?>
+					<option value="<?php echo esc_attr( $cat->term_id ); ?>" <?php selected( $cat_id, $cat->term_id ); ?>><?php echo esc_html( $cat->name ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<p><label><?php esc_html_e( 'Số bài hiển thị (1 nổi bật + còn lại trong lưới):', 'nest' ); ?></label>
+		<input type="number" name="<?php echo esc_attr( $this->get_field_name( 'count' ) ); ?>" value="<?php echo esc_attr( $count ); ?>" min="1" max="13" style="width:60px"></p>
+		<p><label><?php esc_html_e( 'Button text:', 'nest' ); ?></label>
+		<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'btn_text' ) ); ?>" value="<?php echo esc_attr( $btn_text ); ?>"></p>
+		<p><label><?php esc_html_e( 'Button URL (để trống = trang danh mục):', 'nest' ); ?></label>
+		<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'btn_url' ) ); ?>" value="<?php echo esc_attr( $btn_url ); ?>"></p>
+		<?php
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		return array(
+			'eyebrow'  => sanitize_text_field( $new_instance['eyebrow'] ?? '' ),
+			'title'    => sanitize_text_field( $new_instance['title'] ?? '' ),
+			'cat_id'   => absint( $new_instance['cat_id'] ?? 0 ),
+			'count'    => max( 1, absint( $new_instance['count'] ?? 7 ) ),
+			'btn_text' => sanitize_text_field( $new_instance['btn_text'] ?? '' ),
+			'btn_url'  => esc_url_raw( $new_instance['btn_url'] ?? '' ),
+		);
+	}
+}
+
+/* =======================================================================
+ * 9. Partners Widget (Đối tác)
+ * ===================================================================== */
+
+class Nest_Widget_Partners extends WP_Widget {
+
+	public function __construct() {
+		parent::__construct(
+			'nest_partners',
+			__( '[Home] Partners', 'nest' ),
+			array( 'description' => __( 'Section Đối tác – carousel logo thương hiệu.', 'nest' ) )
+		);
+	}
+
+	private function get_defaults() {
+		$uri = get_template_directory_uri() . '/assets/images/';
+		return array(
+			array( 'image' => $uri . 'partner_1.svg', 'url' => '#', 'title' => 'Partner 1' ),
+			array( 'image' => $uri . 'partner_2.svg', 'url' => '#', 'title' => 'Partner 2' ),
+			array( 'image' => $uri . 'partner_3.svg', 'url' => '#', 'title' => 'Partner 3' ),
+			array( 'image' => $uri . 'partner_4.svg', 'url' => '#', 'title' => 'Partner 4' ),
+			array( 'image' => $uri . 'partner_5.svg', 'url' => '#', 'title' => 'Partner 5' ),
+			array( 'image' => $uri . 'partner_6.svg', 'url' => '#', 'title' => 'Partner 6' ),
+		);
+	}
+
+	public function widget( $args, $instance ) {
+		$eyebrow = isset( $instance['eyebrow'] ) && $instance['eyebrow'] ? $instance['eyebrow'] : get_bloginfo( 'name' );
+		$title   = isset( $instance['title'] ) && $instance['title'] ? $instance['title'] : __( 'Đối tác của chúng tôi', 'nest' );
+		$items   = isset( $instance['items'] ) && ! empty( $instance['items'] ) ? array_filter( $instance['items'], function ( $i ) { return ! empty( $i['image'] ); } ) : $this->get_defaults();
+
+		if ( empty( $items ) ) {
+			return;
+		}
+		?>
+		<section class="section-index section-partners py-[30px] max-md:py-[25px]">
+			<div class="container mx-auto px-4">
+				<div class="section-title text-center relative mb-6">
+					<span class="block w-full font-medium uppercase text-primary text-sm max-md:text-xs"><?php echo esc_html( $eyebrow ); ?></span>
+					<h2 class="inline-block font-heading font-extrabold text-[2.6rem] max-md:text-[2rem] uppercase mb-0"><?php echo esc_html( $title ); ?></h2>
+					<div class="section-separator flex justify-center relative mt-2.5">
+						<div class="relative w-8 h-3 before:content-[''] before:absolute before:top-0 before:left-2 before:w-2.5 before:h-2.5 before:border before:border-primary before:rotate-45 after:content-[''] after:absolute after:top-0 after:right-2 after:w-2.5 after:h-2.5 after:border after:border-primary after:rotate-45"></div>
+					</div>
+				</div>
+
+				<div class="section-slider section-slider--partners">
+					<div class="swiper brands-slider">
+						<div class="swiper-wrapper items-center">
+							<?php foreach ( $items as $item ) :
+								$img  = isset( $item['image'] ) ? $item['image'] : '';
+								$url  = isset( $item['url'] ) && $item['url'] ? $item['url'] : '#';
+								$alt  = isset( $item['title'] ) ? $item['title'] : '';
+								?>
+								<div class="swiper-slide">
+									<a href="<?php echo esc_url( $url ); ?>" title="<?php echo esc_attr( $alt ); ?>" class="brand-item block p-3 grayscale opacity-70 transition-all duration-300 hover:grayscale-0 hover:opacity-100">
+										<img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $alt ); ?>" class="w-full h-auto max-h-[80px] object-contain mx-auto" width="225" height="113" loading="lazy">
+									</a>
+								</div>
+							<?php endforeach; ?>
+						</div>
+						<div class="swiper-button-prev">
+							<svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2.13" y="29" width="38" height="38" transform="rotate(-45 2.13 29)" stroke="currentColor" fill="#fff" stroke-width="2" class="rect-outer"></rect><rect x="8" y="29.21" width="30" height="30" transform="rotate(-45 8 29.21)" fill="currentColor" class="rect-inner"></rect><path d="M18.5 29H39.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M29 18.5L39.5 29L29 39.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+						</div>
+						<div class="swiper-button-next">
+							<svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2.13" y="29" width="38" height="38" transform="rotate(-45 2.13 29)" stroke="currentColor" fill="#fff" stroke-width="2" class="rect-outer"></rect><rect x="8" y="29.21" width="30" height="30" transform="rotate(-45 8 29.21)" fill="currentColor" class="rect-inner"></rect><path d="M18.5 29H39.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M29 18.5L39.5 29L29 39.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<?php
+	}
+
+	public function form( $instance ) {
+		$eyebrow = isset( $instance['eyebrow'] ) ? $instance['eyebrow'] : '';
+		$title   = isset( $instance['title'] ) ? $instance['title'] : '';
+		$items   = isset( $instance['items'] ) && ! empty( $instance['items'] ) ? $instance['items'] : $this->get_defaults();
+		$count   = max( count( $items ), 6 );
+		?>
+		<p><label><?php esc_html_e( 'Eyebrow:', 'nest' ); ?></label>
+		<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'eyebrow' ) ); ?>" value="<?php echo esc_attr( $eyebrow ); ?>"></p>
+		<p><label><?php esc_html_e( 'Title:', 'nest' ); ?></label>
+		<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $title ); ?>"></p>
+		<hr>
+		<p><strong><?php esc_html_e( 'Logo đối tác:', 'nest' ); ?></strong></p>
+		<?php for ( $i = 0; $i < $count; $i ++ ) : $item = isset( $items[ $i ] ) ? $items[ $i ] : array(); ?>
+			<div style="border:1px solid #ddd;padding:8px;margin-bottom:8px;">
+				<p><strong><?php printf( esc_html__( 'Partner %d', 'nest' ), $i + 1 ); ?></strong></p>
+				<p><label><?php esc_html_e( 'Image URL:', 'nest' ); ?></label><br>
+				<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'items' ) ); ?>[<?php echo $i; ?>][image]" value="<?php echo esc_attr( $item['image'] ?? '' ); ?>"></p>
+				<p><label><?php esc_html_e( 'Link URL:', 'nest' ); ?></label><br>
+				<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'items' ) ); ?>[<?php echo $i; ?>][url]" value="<?php echo esc_attr( $item['url'] ?? '#' ); ?>"></p>
+				<p><label><?php esc_html_e( 'Tên/Alt:', 'nest' ); ?></label><br>
+				<input class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'items' ) ); ?>[<?php echo $i; ?>][title]" value="<?php echo esc_attr( $item['title'] ?? '' ); ?>"></p>
+			</div>
+		<?php endfor; ?>
+		<p>
+			<label><?php esc_html_e( 'Số lượng partner mong muốn:', 'nest' ); ?></label>
+			<input type="number" name="<?php echo esc_attr( $this->get_field_name( 'item_count' ) ); ?>" value="<?php echo esc_attr( $count ); ?>" min="2" max="20" style="width:60px">
+		</p>
+		<?php
+	}
+
+	public function update( $new_instance, $old_instance ) {
+		$instance = array(
+			'eyebrow' => sanitize_text_field( $new_instance['eyebrow'] ?? '' ),
+			'title'   => sanitize_text_field( $new_instance['title'] ?? '' ),
+		);
+
+		$items = array();
+		if ( isset( $new_instance['items'] ) && is_array( $new_instance['items'] ) ) {
+			foreach ( $new_instance['items'] as $item ) {
+				$image = isset( $item['image'] ) ? esc_url_raw( trim( $item['image'] ) ) : '';
+				if ( ! $image ) {
+					continue;
+				}
+				$items[] = array(
+					'image' => $image,
+					'url'   => isset( $item['url'] ) ? esc_url_raw( trim( $item['url'] ) ) : '#',
+					'title' => isset( $item['title'] ) ? sanitize_text_field( $item['title'] ) : '',
+				);
+			}
+		}
+
+		$count = isset( $new_instance['item_count'] ) ? absint( $new_instance['item_count'] ) : count( $items );
+		$count = max( $count, 2 );
+		while ( count( $items ) < $count ) {
+			$items[] = array( 'image' => '', 'url' => '#', 'title' => '' );
+		}
+
+		$instance['items'] = $items;
+		return $instance;
+	}
+}
+
+/* =======================================================================
+ * 10. Seed default widgets on theme activation.
  * ===================================================================== */
 
 add_action( 'after_switch_theme', 'nest_seed_default_homepage_widgets' );
@@ -1063,6 +1384,8 @@ function nest_seed_default_homepage_widgets() {
 		'nest_product_tabs'      => array(),
 		'nest_coupon_slider'     => array(),
 		'nest_why_choose'        => array(),
+		'nest_news'              => array(),
+		'nest_partners'          => array(),
 	);
 
 	$homepage_widgets = array();

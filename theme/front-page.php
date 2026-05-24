@@ -21,6 +21,8 @@ get_header();
 			get_template_part( 'template-parts/home/section', 'product-tab' );
 			get_template_part( 'template-parts/home/section', 'coupon' );
 			get_template_part( 'template-parts/home/section', 'why-choose' );
+			get_template_part( 'template-parts/home/section', 'news' );
+			get_template_part( 'template-parts/home/section', 'partners' );
 		endif;
 		?>
 	</main>

@@ -132,6 +132,23 @@ document.addEventListener('DOMContentLoaded', () => {
 				},
 			});
 		});
+
+		// Brands / Partners Slider
+		document.querySelectorAll('.brands-slider').forEach((el) => {
+			if (el.swiper) return;
+			new Swiper(el, {
+				slidesPerView: 2,
+				spaceBetween: 16,
+				loop: true,
+				autoplay: { delay: 3000, disableOnInteraction: false },
+				navigation: { nextEl: el.querySelector('.swiper-button-next'), prevEl: el.querySelector('.swiper-button-prev') },
+				breakpoints: {
+					480: { slidesPerView: 3, spaceBetween: 16 },
+					768: { slidesPerView: 4, spaceBetween: 20 },
+					1024: { slidesPerView: 6, spaceBetween: 20 },
+				},
+			});
+		});
 	}
 
 	initSwipers();
