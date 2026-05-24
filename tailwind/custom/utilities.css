@@ -14,3 +14,13 @@
 		display: none;
 	}
 }
+
+/**
+ * Tailwind utility ordering puts `inline-flex` AFTER `hidden` in the compiled
+ * sheet, so an element with both classes (e.g. the show-more / show-less
+ * button states on the product description tab) renders as inline-flex and
+ * the “hidden” intent is ignored. Bump `.hidden` to always win.
+ */
+.hidden {
+	display: none !important;
+}

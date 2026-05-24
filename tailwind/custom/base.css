@@ -35,9 +35,36 @@ object {
 }
 
 /**
- * Prevent any single block from forcing horizontal scroll on the page itself.
- * Only on <body> — `html { overflow-x: hidden }` breaks sticky positioning.
+ * Prevent any block from forcing horizontal scroll on the page. `overflow-x:
+ * hidden` on <body> alone doesn’t help if <body>’s width auto-expands to fit
+ * an overflowing child, so constrain its max-width to the viewport too.
+ * `overflow-x: clip` (rather than `hidden`) avoids creating a new scroll
+ * context, which keeps sticky/anchor scrolling intact.
  */
+html,
 body {
-	overflow-x: hidden;
+	overflow-x: clip;
+}
+body {
+	max-width: 100vw;
+}
+
+/**
+ * Long user-generated content (article body, product description) must wrap
+ * instead of stretching the page when it contains long unbroken strings,
+ * URLs, or oversized embeds.
+ */
+.entry-content,
+.product-description,
+.prose {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+}
+
+.entry-content table,
+.product-description table,
+.prose table {
+	display: block;
+	max-width: 100%;
+	overflow-x: auto;
 }
