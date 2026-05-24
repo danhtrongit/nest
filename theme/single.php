@@ -17,6 +17,9 @@ get_header();
 
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'max-w-4xl mx-auto' ); ?>>
 
+				<!-- Article body card -->
+				<div class="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-5">
+
 				<!-- Breadcrumb-style meta -->
 				<div class="flex items-center gap-2 text-sm text-gray-500 mb-4 flex-wrap">
 					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="hover:text-primary transition-colors"><?php esc_html_e( 'Trang chủ', 'nest' ); ?></a>
@@ -128,8 +131,10 @@ get_header();
 					</div>
 				</div>
 
+				</div><!-- /article body card -->
+
 				<!-- Post Navigation -->
-				<div class="post-navigation grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+				<div class="post-navigation grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
 					<?php
 					$prev_post = get_previous_post();
 					$next_post = get_next_post();
@@ -175,7 +180,7 @@ get_header();
 				$related = new WP_Query( $related_args );
 				if ( $related->have_posts() ) :
 					?>
-					<div class="mb-8">
+					<div class="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-5">
 						<h3 class="font-heading font-bold text-xl text-foreground mb-4 pb-3 border-b border-gray-100">
 							<?php esc_html_e( 'Bài viết liên quan', 'nest' ); ?>
 						</h3>
@@ -193,9 +198,13 @@ get_header();
 
 				<!-- Comments -->
 				<?php
-				if ( comments_open() || get_comments_number() ) {
-					comments_template();
-				}
+				if ( comments_open() || get_comments_number() ) :
+					?>
+					<div class="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-5">
+						<?php comments_template(); ?>
+					</div>
+					<?php
+				endif;
 				?>
 
 			</article>
