@@ -1,0 +1,1158 @@
+/**
+ * Custom styles to immediately follow Tailwind’s `components` layer
+ *
+ * “Use the `components` layer for any more complicated classes you want to add
+ *  to your project that you'd still like to be able to override with utility
+ *  classes.”
+ *
+ *  — from https://tailwindcss.com/docs/adding-custom-styles#adding-component-classes
+ */
+
+/**
+ * Post title styles
+ *
+ * These will be applied to all headings with a `page-title` or `entry-title`
+ * class on the frontend and to the post title in the block editor.
+ *
+ * The supplied styles are meant to match the default `h1` classes from
+ * Tailwind Typography.
+ */
+.page-title,
+.entry-title {
+	@apply max-w-content mb-6 text-3xl font-extrabold;
+}
+
+/**
+ * Post meta and footer styles
+ *
+ * These will be applied to the post-specific elements to keep the post itself
+ * at content width pending custom styling.
+ */
+.entry-meta,
+.entry-footer,
+.post-navigation,
+#comments {
+	@apply max-w-content mx-auto mb-6;
+}
+
+/**
+ * Layout styles for centered content areas
+ *
+ * If you are controlling the width of your content area with styles applied
+ * to its container, you can delete the following styles whose selectors begin
+ * with `.page-content >` and `.entry-content >`. For more details, please see
+ * the following:
+ *
+ * https://make.wordpress.org/core/2021/06/29/on-layout-and-content-width-in-wordpress-5-8/
+ */
+.page-content>*,
+.entry-content>* {
+	/* Content width from the `theme.json` file */
+	@apply max-w-content mx-auto;
+}
+
+.entry-content>.alignwide {
+	/* Wide width from the `theme.json` file */
+	@apply max-w-wide;
+}
+
+.entry-content>.alignfull {
+	@apply max-w-none;
+}
+
+.entry-content>.alignleft {
+	@apply float-left mr-8;
+}
+
+.entry-content>.alignright {
+	@apply float-right ml-8;
+}
+
+/* Mobile menu styles */
+.mobile-nav-menu,
+.mobile-category-menu {
+	@apply list-none m-0 p-0;
+}
+
+.mobile-nav-menu>li>a,
+.mobile-category-menu>li>a {
+	@apply block px-4 py-2.5 text-sm text-foreground border-b border-gray-50 hover:text-primary;
+}
+
+.mobile-nav-menu .sub-menu,
+.mobile-category-menu .sub-menu {
+	@apply list-none m-0 pl-4;
+}
+
+.mobile-nav-menu .sub-menu a,
+.mobile-category-menu .sub-menu a {
+	@apply block px-4 py-2 text-sm text-gray-600 hover:text-primary;
+}
+
+/* Footer menu styles */
+#colophon .footer-menu-list {
+	@apply list-none p-0 m-0;
+}
+
+#colophon .footer-menu-list li a {
+	@apply block py-1.5 text-sm text-[#f1f1f1] leading-normal transition-all duration-200;
+}
+
+#colophon .footer-menu-list li a:hover {
+	@apply text-hover;
+}
+
+/* ─── Nest Button (global default style) ─── */
+.nest-btn {
+	@apply relative inline-flex items-center h-10 px-1 bg-secondary text-primary font-semibold text-base transition-all duration-300 cursor-pointer border-0;
+	box-shadow: #333 0px 15px 20px -15px;
+}
+
+.nest-btn::before {
+	content: "";
+	@apply absolute inset-x-1 top-1 bottom-1 border-y border-primary/50 pointer-events-none;
+}
+
+.nest-btn:hover {
+	@apply bg-hover text-white;
+}
+
+.nest-btn:hover::before {
+	@apply border-white/50;
+}
+
+.nest-btn:hover .nest-btn__deco {
+	@apply text-white;
+}
+
+/* Decorative SVG ornaments — flex items, stick to edges */
+.nest-btn__deco {
+	@apply w-3.5 h-8 shrink-0 text-primary transition-colors duration-300;
+}
+
+/* Text fills remaining space, centered */
+.nest-btn__text {
+	@apply flex-1 text-center px-4;
+}
+
+/* Primary variant — bg-primary, white text/deco/border */
+.nest-btn--primary {
+	@apply bg-primary text-white;
+}
+
+.nest-btn--primary .nest-btn__deco,
+.nest-btn--primary .nest-btn__text {
+	@apply text-white;
+}
+
+.nest-btn--primary::before {
+	@apply border-white/50;
+}
+
+.nest-btn--primary:hover {
+	@apply bg-hover;
+}
+
+/* Legacy alias */
+.btn-frame {
+	@apply relative inline-flex items-center justify-center h-10 px-8 bg-secondary text-primary font-semibold text-base transition-all duration-300 cursor-pointer border-0;
+	box-shadow: #333 0px 15px 20px -15px;
+}
+
+.btn-frame::before {
+	content: "";
+	@apply absolute inset-x-1 top-1 bottom-1 border-y border-primary/50 pointer-events-none;
+}
+
+.btn-frame:hover {
+	@apply bg-hover text-white;
+}
+
+.btn-frame:hover::before {
+	@apply border-white/50;
+}
+
+.btn-frame:hover svg {
+	@apply text-white;
+}
+
+/* Section separator (reusable) */
+.section-separator::before,
+.section-separator::after {
+	content: "";
+	display: block;
+	width: 30px;
+	height: 1px;
+	background: theme(--color-primary);
+	position: absolute;
+	top: calc(50% - 1px);
+}
+
+.section-separator::before {
+	left: calc(50% - 50px);
+}
+
+.section-separator::after {
+	right: calc(50% - 50px);
+}
+
+.section-separator--light::before,
+.section-separator--light::after {
+	background: theme(--color-secondary);
+}
+
+/* Swiper - Diamond nav buttons (global) */
+.swiper .swiper-button-prev,
+.swiper .swiper-button-next {
+	width: 36px;
+	height: 36px;
+	background: transparent;
+	border: 0;
+	opacity: 0;
+	transition: all 0.25s ease;
+	color: theme(--color-primary);
+}
+
+.swiper .swiper-button-prev {
+	left: -35px;
+	transform: translate(-32px, -50%) rotate(180deg);
+}
+
+.swiper .swiper-button-next {
+	right: -35px;
+	transform: translate(32px, -50%);
+}
+
+.swiper .swiper-button-prev::after,
+.swiper .swiper-button-next::after {
+	display: none;
+}
+
+.swiper .swiper-button-prev svg,
+.swiper .swiper-button-next svg {
+	width: 100%;
+	height: 100%;
+}
+
+.swiper .swiper-button-prev:hover,
+.swiper .swiper-button-next:hover {
+	color: theme(--color-hover);
+}
+
+.section-slider:hover .swiper-button-prev {
+	left: 8px;
+	opacity: 1;
+	transform: translateY(-50%) rotate(180deg);
+}
+
+.section-slider:hover .swiper-button-next {
+	right: 8px;
+	opacity: 1;
+	transform: translateY(-50%);
+}
+
+@media (max-width: 767px) {
+
+	.swiper .swiper-button-prev,
+	.swiper .swiper-button-next {
+		display: none;
+	}
+}
+
+/* Swiper - Diamond pagination (global) */
+.swiper .swiper-pagination-bullets {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 4px;
+	bottom: 20px;
+	min-height: 20px;
+}
+
+.swiper .swiper-pagination-bullet {
+	width: 10px;
+	height: 10px;
+	border: 1px solid #ddd;
+	border-radius: 0;
+	background: rgba(255, 255, 255, 0.2);
+	opacity: 1;
+	transform: rotate(45deg);
+}
+
+.swiper .swiper-pagination-bullet-active {
+	background: theme(--color-primary);
+	transition: all 0.2s;
+}
+
+/* WooCommerce toolbar — sort bar (matching Sapo template) */
+.woocommerce-page .woocommerce-result-count {
+	@apply text-sm text-gray-500 py-3 m-0;
+	float: left;
+	line-height: 40px;
+}
+
+/* Sort bar — radio-button style matching Sapo template */
+.woocommerce-ordering.sort-cate-right {
+	@apply flex items-center gap-4 m-0;
+	float: right;
+}
+
+.woocommerce-ordering.sort-cate-right h3 {
+	@apply text-sm font-bold text-black m-0 whitespace-nowrap flex items-center gap-1;
+}
+
+.woocommerce-ordering.sort-cate-right h3 svg {
+	@apply w-4 h-4;
+}
+
+.woocommerce-ordering.sort-cate-right ul.sort-options {
+	@apply flex items-center list-none m-0 p-0;
+	gap: 20px;
+}
+
+.woocommerce-ordering.sort-cate-right ul.sort-options li {
+	@apply list-none m-0 p-0;
+}
+
+.woocommerce-ordering.sort-cate-right ul.sort-options li a {
+	@apply text-sm no-underline flex items-center;
+	color: theme(--color-primary);
+	padding-left: 22px;
+	position: relative;
+	transition: color 0.2s;
+}
+
+/* Radio circle via pseudo-element on <i> */
+.woocommerce-ordering.sort-cate-right ul.sort-options li a i {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 14px;
+	height: 14px;
+	border: 1px solid #aaa;
+	border-radius: 50%;
+	display: block;
+}
+
+.woocommerce-ordering.sort-cate-right ul.sort-options li a i::after {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: transparent;
+	transition: background 0.2s;
+}
+
+/* Active state */
+.woocommerce-ordering.sort-cate-right ul.sort-options li.active a i {
+	border-color: theme(--color-primary);
+}
+
+.woocommerce-ordering.sort-cate-right ul.sort-options li.active a i::after {
+	background: theme(--color-primary);
+}
+
+.woocommerce-ordering.sort-cate-right ul.sort-options li a:hover {
+	color: theme(--color-hover);
+}
+
+.woocommerce-ordering.sort-cate-right ul.sort-options li a:hover i {
+	border-color: theme(--color-hover);
+}
+
+/* Clear floats before product grid */
+ul.products {
+	clear: both;
+}
+
+/* Hide old select (in case it leaks through) */
+.woocommerce-ordering select.orderby {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.woocommerce-page .woocommerce-result-count {
+		float: none;
+		line-height: normal;
+		@apply pb-2;
+	}
+
+	.woocommerce-ordering.sort-cate-right {
+		float: none;
+		@apply flex-wrap gap-2;
+	}
+
+	.woocommerce-ordering.sort-cate-right ul.sort-options {
+		@apply flex-wrap;
+		gap: 10px;
+	}
+}
+
+/* Product grid — shop & archive pages */
+ul.products {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 20px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+ul.products>li {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+@media (max-width: 1199px) {
+	ul.products {
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+	}
+}
+
+@media (max-width: 767px) {
+	ul.products {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 12px;
+	}
+}
+
+/* Product card — matching Sapo template exactly */
+.item_product_main {
+	display: block;
+	height: 100%;
+	padding-bottom: 28px;
+	position: relative;
+}
+
+.item_product_main .product-action {
+	background: #fff;
+	height: 100%;
+	box-shadow: 0px 0px 6px 0px rgba(50, 50, 93, 0.15), 1px 1px 5px rgba(0, 0, 0, 0.05);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: end;
+	overflow: hidden;
+}
+
+.item_product_main .product-action .product-thumbnail {
+	width: 100%;
+	aspect-ratio: 1;
+	position: relative;
+	overflow: hidden;
+}
+
+.item_product_main .product-action .product-thumbnail .image_thumb img {
+	width: auto;
+	max-height: 100%;
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	object-fit: contain;
+}
+
+.item_product_main .product-action .product-info {
+	width: 100%;
+	border-top: 2px solid theme(--color-primary);
+	padding: 12px 10px;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 0%;
+	position: relative;
+	background: #fff;
+	transition-duration: .3s;
+	z-index: 1;
+}
+
+.item_product_main .product-action .product-info .name-price {
+	flex: 1 1 0%;
+	display: flex;
+	flex-direction: column;
+}
+
+.item_product_main .product-action .product-info .name-price .product-name {
+	font-size: 1rem;
+	flex: 1 1 0%;
+	margin: 0;
+}
+
+.item_product_main .product-action .product-info .name-price .product-name a {
+	color: theme(--color-foreground);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-decoration: none;
+}
+
+.item_product_main .product-action .product-info .name-price .product-name a:hover {
+	color: theme(--color-primary);
+}
+
+.item_product_main .product-action .product-info .name-price .product-price-cart {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 4px;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.item_product_main .product-action .product-info .name-price .product-price-cart .compare-price {
+	color: #9aa5b3;
+	font-size: 0.875rem;
+	text-decoration: line-through;
+}
+
+.item_product_main .product-action .product-info .name-price .product-price-cart .price {
+	color: theme(--color-price);
+	font-weight: 700;
+	font-size: 1.125rem;
+}
+
+/* Button row — hidden by default, slides up on hover (desktop) */
+.item_product_main .product-action .product-info .product-button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	padding: 12px 10px 0;
+	gap: 8px;
+}
+
+.item_product_main .product-action .product-info .product-button .btn-cart {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition-duration: .3s;
+	position: relative;
+	min-width: 160px;
+	max-width: 100%;
+	font-size: 0.875rem;
+	padding: 0 16px;
+	height: 36px;
+	background: theme(--color-primary);
+	color: #fff;
+	border: 0;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.item_product_main .product-action .product-info .product-button .btn-cart:hover {
+	background: theme(--color-hover);
+}
+
+.item_product_main .product-action .product-info .product-button .btn-cart svg {
+	width: 18px;
+	height: 18px;
+	display: block;
+	margin-left: 6px;
+	fill: #fff;
+}
+
+/* Flash sale badge */
+.item_product_main .product-action .flash-sale {
+	background: theme(--color-price);
+	width: auto;
+	padding: 2px 10px;
+	text-align: center;
+	font-size: 0.8rem;
+	font-weight: 700;
+	display: inline-block;
+	position: absolute;
+	top: 14px;
+	left: 8px;
+	color: #fff;
+	z-index: 1;
+}
+
+/* Promo tag (gift badge) */
+.item_product_main .product-action .tag-promo {
+	width: 40px;
+	height: 40px;
+	border: 1px solid #ffc55e;
+	background: #ffc865;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: static;
+	margin-bottom: -48px;
+	margin-top: 8px;
+	margin-right: 8px;
+	z-index: 1;
+	cursor: pointer;
+	box-shadow: 0px 0px 6px 0px rgba(50, 50, 93, 0.15), 1px 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+.item_product_main .product-action .tag-promo svg {
+	width: 20px;
+	height: 20px;
+	fill: #fff;
+}
+
+.item_product_main .product-action .tag-promo .promotion-content {
+	position: absolute;
+	top: 57px;
+	right: 8px;
+	width: calc(100% - 16px);
+	max-height: 180px;
+	padding: 8px;
+	color: #f8f8f8;
+	font-size: 0.875rem;
+	background: theme(--color-primary);
+	display: none;
+}
+
+.item_product_main .product-action .tag-promo .promotion-content p {
+	margin: 0;
+}
+
+.item_product_main .product-action .tag-promo:hover {
+	background: theme(--color-primary);
+	border-color: #ddd;
+}
+
+.item_product_main .product-action .tag-promo:hover .promotion-content {
+	display: block;
+}
+
+/* Hover effect: slide product-info up to reveal buttons (desktop only) */
+@media (min-width: 1200px) {
+	.item_product_main .product-action:hover {
+		box-shadow: rgba(60, 64, 67, 0.1) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+	}
+
+	.item_product_main .product-action:hover .product-thumbnail .image_thumb img {
+		transform: scale(1.03);
+	}
+
+	.item_product_main .product-action:hover .product-info {
+		transform: translateY(-58px);
+	}
+}
+
+@media (max-width: 991px) {
+	.item_product_main .product-action .product-info .name-price .product-name {
+		font-size: 0.875rem;
+	}
+
+	.item_product_main .product-action .product-info .name-price .product-price-cart {
+		gap: 4px;
+	}
+
+	.item_product_main .product-action .product-info .name-price .product-price-cart .price {
+		font-size: 1rem;
+	}
+
+	.item_product_main .product-action .product-info .product-button {
+		padding: 0 7px;
+	}
+
+	.item_product_main .product-action .product-info .product-button .btn-cart {
+		font-size: 0.75rem;
+		width: 100%;
+		min-width: inherit;
+		padding: 0 12px;
+	}
+
+	.item_product_main .product-action .product-info .product-button .btn-cart svg {
+		width: 16px;
+		height: 16px;
+	}
+}
+
+/* Remove old unused product-card class */
+/* WooCommerce pages — full-width layout with container */
+.woocommerce-page #primary {
+	@apply container mx-auto px-4 py-[30px] max-md:py-[25px];
+}
+
+.woocommerce-page .entry-title {
+	@apply max-w-none mx-0;
+}
+
+.woocommerce-cart .entry-title {
+	@apply hidden;
+}
+
+.woocommerce-page .page-content>*,
+.woocommerce-page .entry-content>* {
+	@apply max-w-none;
+}
+
+.woocommerce-page .entry-content a {
+	@apply no-underline;
+}
+
+/* WooCommerce checkout button — .nest-btn handles styling, just add w-full */
+.wc-proceed-to-checkout .nest-btn {
+	@apply w-full;
+}
+
+/* WooCommerce quantity input */
+.woocommerce .quantity {
+	@apply inline-flex items-center;
+}
+
+.woocommerce .quantity .qty {
+	@apply h-10 text-center text-base border-0 focus:outline-none;
+	width: 50px;
+	color: #1c1c1c;
+	-moz-appearance: textfield;
+}
+
+.woocommerce .quantity .qty::-webkit-inner-spin-button,
+.woocommerce .quantity .qty::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.woocommerce .quantity .qty-btn {
+	@apply h-10 flex items-center justify-center text-base cursor-pointer select-none leading-none transition-colors;
+	width: 30px;
+	background: #f3f3f3;
+	color: #333;
+	border: 1px solid #ddd;
+}
+
+.woocommerce .quantity .qty-btn:hover {
+	@apply bg-gray-200;
+}
+
+/* WooCommerce cart item images */
+.woocommerce-cart-form__cart-item .cart-item-thumbnail-link {
+	/* Prevent inherited line-height/font-size from pushing the image down. */
+	font-size: 0;
+	line-height: 0;
+}
+
+.woocommerce-cart-form__cart-item img {
+	@apply block w-full h-full object-cover;
+}
+
+/* ─── Single Product: quantity + buttons (matching Sapo template) ─── */
+
+.flex-quantity .custom-btn-number label {
+	@apply text-sm text-gray-600;
+}
+
+/* "Mua ngay" – primary solid button */
+.btn-buyNow {
+	@apply flex-1 h-10 inline-flex items-center justify-center bg-primary text-white font-semibold text-base transition-all duration-300 cursor-pointer border-0;
+}
+
+.btn-buyNow:hover {
+	@apply bg-hover;
+}
+
+/* "Thêm vào giỏ" – secondary solid button */
+.btn-cart.btn-extent {
+	@apply flex-1 h-10 inline-flex items-center justify-center bg-secondary text-primary font-semibold text-base border-0 transition-all duration-300 cursor-pointer;
+}
+
+.btn-cart.btn-extent:hover {
+	@apply bg-hover text-white;
+}
+
+/* ─── WooCommerce Checkout ─── */
+
+/* Checkout form fields — consistent input styling */
+.checkout-fields .form-row {
+	@apply mb-3;
+}
+
+.checkout-fields .form-row label {
+	@apply block text-sm font-medium text-foreground mb-1;
+}
+
+.checkout-fields .form-row label .required {
+	@apply text-price ml-0.5;
+}
+
+.checkout-fields .form-row input.input-text,
+.checkout-fields .form-row textarea,
+.checkout-fields .form-row select {
+	@apply w-full h-10 px-3 text-sm border border-gray-200 bg-white text-foreground transition-colors duration-200;
+	@apply focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20;
+}
+
+.checkout-fields .form-row textarea {
+	@apply h-auto min-h-[80px] py-2;
+}
+
+.checkout-fields .form-row select {
+	@apply appearance-none cursor-pointer;
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23666'%3e%3cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd' /%3e%3c/svg%3e");
+	background-position: right 0.5rem center;
+	background-repeat: no-repeat;
+	background-size: 1.25em 1.25em;
+	padding-right: 2.5rem;
+}
+
+.checkout-fields .form-row.woocommerce-invalid input.input-text,
+.checkout-fields .form-row.woocommerce-invalid select {
+	@apply border-red-500;
+}
+
+.checkout-fields .form-row.woocommerce-validated input.input-text,
+.checkout-fields .form-row.woocommerce-validated select {
+	@apply border-green-500;
+}
+
+/* Two-column row for first/last name, etc. */
+.checkout-fields .form-row-first,
+.checkout-fields .form-row-last {
+	@apply inline-block align-top;
+	width: calc(50% - 6px);
+}
+
+.checkout-fields .form-row-first {
+	@apply mr-3;
+}
+
+@media (max-width: 575px) {
+	.checkout-fields .form-row-first,
+	.checkout-fields .form-row-last {
+		width: 100%;
+		margin-right: 0;
+	}
+}
+
+/* Checkout terms & conditions */
+.woocommerce-terms-and-conditions-wrapper {
+	@apply text-sm text-gray-600 mb-4;
+}
+
+.woocommerce-terms-and-conditions-wrapper .woocommerce-terms-and-conditions {
+	@apply max-h-40 overflow-y-auto border border-gray-100 p-3 mb-3 text-xs text-gray-500;
+}
+
+.woocommerce-terms-and-conditions-wrapper .woocommerce-form__label-for-checkbox {
+	@apply inline-flex items-start gap-2 cursor-pointer;
+}
+
+.woocommerce-terms-and-conditions-wrapper .woocommerce-form__input-checkbox {
+	@apply accent-primary w-4 h-4 mt-0.5 shrink-0;
+}
+
+/* Checkout notices */
+.woocommerce-checkout .woocommerce-info,
+.woocommerce-checkout .woocommerce-message,
+.woocommerce-checkout .woocommerce-error {
+	@apply text-sm p-3 mb-4 border-l-4;
+}
+
+.woocommerce-checkout .woocommerce-info {
+	@apply bg-blue-50 border-blue-400 text-blue-800;
+}
+
+.woocommerce-checkout .woocommerce-message {
+	@apply bg-green-50 border-green-400 text-green-800;
+}
+
+.woocommerce-checkout .woocommerce-error {
+	@apply bg-red-50 border-red-400 text-red-800 list-none m-0 p-3;
+}
+
+/* Login toggle on checkout */
+.woocommerce-form-login-toggle .woocommerce-info {
+	@apply flex items-center gap-2 flex-wrap;
+}
+
+.woocommerce-form-login-toggle .woocommerce-info a {
+	@apply text-primary font-semibold hover:text-hover no-underline;
+}
+
+/* Checkout login form */
+.woocommerce-form-login {
+	@apply bg-white border border-gray-100 p-4 mb-5;
+}
+
+.woocommerce-form-login label {
+	@apply block text-sm font-medium text-foreground mb-1;
+}
+
+.woocommerce-form-login input.input-text {
+	@apply w-full h-10 px-3 text-sm border border-gray-200 bg-white text-foreground mb-3;
+	@apply focus:outline-none focus:border-primary;
+}
+
+.woocommerce-form-login .woocommerce-form-login__submit {
+	@apply h-10 px-6 bg-primary text-white font-semibold text-sm border-0 cursor-pointer transition-colors duration-200;
+	@apply hover:bg-hover;
+}
+
+/* Hide default WooCommerce checkout page title — billing heading handles it */
+.woocommerce-checkout .entry-title {
+	@apply hidden;
+}
+
+/* Shipping methods in checkout */
+.woocommerce-checkout #shipping_method {
+	@apply list-none m-0 p-0 space-y-2;
+}
+
+.woocommerce-checkout #shipping_method li {
+	@apply list-none m-0 p-0;
+}
+
+.woocommerce-checkout #shipping_method li label {
+	@apply inline-flex items-center gap-2 text-sm cursor-pointer;
+}
+
+.woocommerce-checkout #shipping_method li input {
+	@apply accent-primary w-4 h-4;
+}
+
+/* ─── Blog / News — Pagination ─── */
+.nav-links {
+	@apply flex items-center justify-center gap-1 flex-wrap;
+}
+
+.nav-links .page-numbers {
+	@apply inline-flex items-center justify-center w-10 h-10 text-sm font-medium text-foreground border border-gray-200 transition-colors duration-200 no-underline;
+}
+
+.nav-links .page-numbers:hover {
+	@apply bg-primary text-white border-primary;
+}
+
+.nav-links .page-numbers.current {
+	@apply bg-primary text-white border-primary;
+}
+
+.nav-links .page-numbers.dots {
+	@apply border-0 pointer-events-none;
+}
+
+.nav-links .prev.page-numbers,
+.nav-links .next.page-numbers {
+	@apply text-primary border-primary/30;
+}
+
+.nav-links .prev.page-numbers:hover,
+.nav-links .next.page-numbers:hover {
+	@apply bg-primary text-white border-primary;
+}
+
+/* ─── Blog / News — Post Tags ─── */
+.post-tags a {
+	@apply inline-block text-xs px-2.5 py-1 bg-gray-100 text-gray-600 no-underline transition-colors duration-200;
+}
+
+.post-tags a:hover {
+	@apply bg-primary text-white;
+}
+
+/* ─── Blog / News — Comments ─── */
+#comments {
+	@apply max-w-none mx-0;
+}
+
+.comments-title {
+	@apply font-heading font-bold text-xl text-foreground mb-4 pb-3 border-b border-gray-100;
+}
+
+.comment-list {
+	@apply list-none m-0 p-0 space-y-4;
+}
+
+.comment-list .comment {
+	@apply list-none m-0 p-0;
+}
+
+.comment-list .comment .comment-body {
+	@apply bg-white border border-gray-100 rounded-md p-4;
+}
+
+.comment-list .comment .comment-author {
+	@apply flex items-center gap-2 mb-2;
+}
+
+.comment-list .comment .comment-author img {
+	@apply w-10 h-10 rounded-full;
+}
+
+.comment-list .comment .comment-author .fn {
+	@apply text-sm font-semibold text-foreground;
+}
+
+.comment-list .comment .comment-author .says {
+	@apply hidden;
+}
+
+.comment-list .comment .comment-metadata {
+	@apply text-xs text-gray-400 mb-3;
+}
+
+.comment-list .comment .comment-metadata a {
+	@apply text-gray-400 hover:text-primary no-underline transition-colors;
+}
+
+.comment-list .comment .comment-content {
+	@apply text-sm text-gray-600 leading-relaxed;
+}
+
+.comment-list .comment .reply a {
+	@apply text-xs font-semibold text-primary hover:text-hover no-underline transition-colors;
+}
+
+.comment-list .children {
+	@apply list-none ml-6 max-md:ml-3 mt-3 p-0 space-y-3;
+}
+
+/* Comment form */
+.comment-respond {
+	@apply mt-6;
+}
+
+.comment-respond .comment-reply-title {
+	@apply font-heading font-bold text-xl text-foreground mb-4 pb-3 border-b border-gray-100;
+}
+
+.comment-respond .comment-reply-title small a {
+	@apply text-sm font-normal text-gray-400 hover:text-primary no-underline transition-colors;
+}
+
+.comment-respond .comment-form {
+	@apply space-y-3;
+}
+
+.comment-respond .comment-form label {
+	@apply block text-sm font-medium text-foreground mb-1;
+}
+
+.comment-respond .comment-form input[type="text"],
+.comment-respond .comment-form input[type="email"],
+.comment-respond .comment-form input[type="url"],
+.comment-respond .comment-form textarea {
+	@apply w-full px-3 py-2 text-sm border border-gray-200 bg-white text-foreground transition-colors duration-200;
+	@apply focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20;
+}
+
+.comment-respond .comment-form textarea {
+	@apply min-h-[120px];
+}
+
+.comment-respond .comment-form .form-submit .submit {
+	@apply h-10 px-6 bg-primary text-white font-semibold text-sm border-0 cursor-pointer transition-colors duration-200;
+	@apply hover:bg-hover;
+}
+
+/* Search form in content-none */
+.search-form {
+	@apply flex items-center gap-2 max-w-sm mx-auto;
+}
+
+.search-form .search-field {
+	@apply flex-1 h-10 px-3 text-sm border border-gray-200 bg-white text-foreground;
+	@apply focus:outline-none focus:border-primary;
+}
+
+.search-form .search-submit {
+	@apply h-10 px-4 bg-primary text-white font-semibold text-sm border-0 cursor-pointer transition-colors;
+	@apply hover:bg-hover;
+}
+
+/* ─── WooCommerce My Account ─── */
+
+/* Hide default page title on my-account page */
+.woocommerce-account .entry-title {
+	@apply hidden;
+}
+
+/* Account navigation links */
+.account-nav-link {
+	color: theme(--color-foreground);
+}
+
+.account-nav-link:hover {
+	@apply bg-gray-50;
+	color: theme(--color-primary);
+}
+
+.account-nav-link.is-active {
+	background: theme(--color-primary);
+	color: #fff;
+	@apply font-semibold;
+}
+
+.account-nav-link.is-active:hover {
+	background: theme(--color-hover);
+	color: #fff;
+}
+
+/* Account page notices */
+.woocommerce-account .woocommerce-message,
+.woocommerce-account .woocommerce-error,
+.woocommerce-account .woocommerce-info {
+	@apply text-sm p-3 mb-4 border-l-4 list-none;
+}
+
+.woocommerce-account .woocommerce-message {
+	@apply bg-green-50 border-green-400 text-green-800;
+}
+
+.woocommerce-account .woocommerce-error {
+	@apply bg-red-50 border-red-400 text-red-800;
+}
+
+.woocommerce-account .woocommerce-info {
+	@apply bg-blue-50 border-blue-400 text-blue-800;
+}
+
+/* Account page tables (orders, downloads) */
+.woocommerce-account .woocommerce-orders-table,
+.woocommerce-account .woocommerce-table {
+	@apply w-full text-sm border-collapse;
+}
+
+.woocommerce-account .woocommerce-orders-table th,
+.woocommerce-account .woocommerce-table th {
+	@apply text-left text-xs font-semibold text-gray-500 uppercase py-2 px-3 border-b border-gray-200;
+}
+
+.woocommerce-account .woocommerce-orders-table td,
+.woocommerce-account .woocommerce-table td {
+	@apply py-3 px-3 border-b border-gray-50 text-foreground;
+}
+
+.woocommerce-account .woocommerce-orders-table .woocommerce-orders-table__cell-order-actions a,
+.woocommerce-account .woocommerce-table td a.button {
+	@apply text-sm text-primary hover:text-hover no-underline font-semibold transition-colors;
+}
+
+/* Account forms (edit-account, edit-address) */
+.woocommerce-account .woocommerce-EditAccountForm label,
+.woocommerce-account .woocommerce-address-fields label {
+	@apply block text-sm font-medium text-foreground mb-1;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm input.input-text,
+.woocommerce-account .woocommerce-address-fields input.input-text,
+.woocommerce-account .woocommerce-EditAccountForm select,
+.woocommerce-account .woocommerce-address-fields select {
+	@apply w-full h-10 px-3 text-sm border border-gray-200 bg-white text-foreground mb-3;
+	@apply focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm .form-row,
+.woocommerce-account .woocommerce-address-fields .form-row {
+	@apply mb-3;
+}
+
+.woocommerce-account button[type="submit"].woocommerce-Button {
+	@apply h-10 px-6 bg-primary text-white font-semibold text-sm border-0 cursor-pointer transition-colors;
+	@apply hover:bg-hover;
+}
